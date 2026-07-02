@@ -66,7 +66,7 @@ def load_sarcasm_model(path_or_name, is_custom=False):
         return pipeline("text-classification", model=path_or_name, tokenizer=path_or_name)
     return pipeline("text-classification", model=path_or_name)
 
-_sarcasm_model_path = _os.path.join(_os.path.dirname(__file__), "sarcasm_model")
+_sarcasm_model_path = _os.path.join(_os.path.dirname(__file__), "..", "sarcasm_model")
 
 if _os.path.exists(_sarcasm_model_path):
     sarcasm_pipeline = load_sarcasm_model(_sarcasm_model_path, is_custom=True)

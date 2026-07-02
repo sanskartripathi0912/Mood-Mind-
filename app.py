@@ -1,5 +1,5 @@
 import streamlit as st
-from models import (
+from src.models import (
     sentiment_pipeline,
     emotion_pipeline,
     translator,
@@ -7,15 +7,15 @@ from models import (
     sarcasm_pipeline
 )
 
-from utils import (
+from src.utils import (
     detect_language,
     translate_to_english,
     detect_intent,
     detect_sarcasm
 )
 
-from memory import add_to_history, get_context
-from llm import analyze_with_llm
+from src.memory import add_to_history, get_context
+from src.llm import analyze_with_llm
 
 st.set_page_config(page_title="ConvoSense AI", layout="wide")
 

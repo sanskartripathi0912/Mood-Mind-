@@ -1,6 +1,6 @@
 # Small test script to check the linkage of the components
-from models import sentiment_pipeline, emotion_pipeline, translator, intent_pipeline, sarcasm_pipeline
-from utils import detect_language, translate_to_english, detect_sentiment, detect_emotion, detect_intent, detect_sarcasm
+from src.models import sentiment_pipeline, emotion_pipeline, translator, intent_pipeline, sarcasm_pipeline
+from src.utils import detect_language, translate_to_english, detect_sentiment, detect_emotion, detect_intent, detect_sarcasm
 
 test_text = "Tumko time hi nahi hai mere liye 😒"
 print(f"Original: {test_text}")
