@@ -1,0 +1,53 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.so
+
+# Env / Conda
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Model files & Large binaries
+sarcasm_model/
+*.bin
+*.safetensors
+*.msgpack
+*.h5
+*.pt
+*.onnx
+
+# Checkpoints
+checkpoint-*/
+
+# Datasets
+dataset/*.csv
+dataset/*.json
+*.csv
+*.xlsx
