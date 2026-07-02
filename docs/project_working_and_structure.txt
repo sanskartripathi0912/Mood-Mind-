@@ -1,0 +1,96 @@
+CONVOSENSE AI — PROJECT WORKING, STRUCTURE, AND IMPLEMENTATION
+============================================================
+
+ConvoSense AI (also known as Mood Mind) is a local conversation intelligence system
+designed to analyze chat messages (supporting multilingual input like Hinglish, Marathi, 
+and Hindi) and provide detailed intent, emotion, sentiment, and sarcasm analysis. 
+It leverages a hybrid architecture of Hugging Face transformers and local LLM reasoning.
+
+
+1. PROJECT WORKING MECHANISM (THE DATA PIPELINE)
+------------------------------------------------
+
+[User Input (colloquial text)]
+      │
+      ▼
+[Memory Context Assembly] ──► Combines the last 5 messages from session state
+      │
+      ▼
+[Translation Layer] ──► M2M-100 translates Hinglish/Marathi text to English
+      │
+      ▼
+[Parallel Classifier Pipeline]
+      ├── Sentiment Classifier (XLM-RoBERTa Model)
+      ├── Emotion Classifier (DistilRoBERTa Model)
+      ├── Intent Classifier (BART Zero-Shot classification)
+      └── Sarcasm Ensemble (Irony RoBERTa + Rule-Based Keyword Check)
+      │
+      ▼
+[LLM Reasoning Engine] ──► Ollama (Llama 3.2:1b) processes tag details
+      │
+      ▼
+[User Output] ──► Renders detailed breakdown (Actual Meaning, Feelings, Intent, Suggestion)
+
+* Step 1 (Memory Tracking): The system keeps a sliding context window of recent messages
+  using a memory queue. This ensures that analysis is context-aware.
+* Step 2 (Translation): Translation is done using "facebook/m2m100_418M". It translates 
+  the text into standard English so that the downstream English-based classifiers can 
+  work with high precision.
+* Step 3 (Tagging):
+  - Sentiment: Identifies whether the tone is positive, neutral, or negative.
+  - Emotion: Determines anger, disgust, fear, joy, sadness, surprise, or neutral.
+  - Intent: Zero-shot classification categorizes the intent of the message on the fly.
+  - Sarcasm: Evaluates the text using a combination of a transformer model and custom 
+    colloquial sarcasm keywords (e.g. "rehne do", "acha thik hai").
+* Step 4 (LLM Reasoning): Classifier outputs are bundled into a prompt for a local 
+  instance of Llama 3.2 (1b parameter) via Ollama, generating WhatsApp-style advice.
+
+
+2. PROJECT DIRECTORY STRUCTURE
+------------------------------
+
+The project is structured systematically to keep UI, core backend code, prototyping notebooks,
+and metadata clean and modular:
+
+VibeTranslator-main/
+├── app.py                      # Streamlit UI & Chat Dashboard
+├── requirements.txt            # Python package dependencies
+├── README.md                   # Visual project overview & installation steps
+├── .gitignore                  # Prevents caching local model directories & venvs
+├── src/                        # Core application package
+│   ├── __init__.py             # Declares directory as a Python package
+│   ├── models.py               # pre-loads Hugging Face pipelines & offline fallback
+│   ├── llm.py                  # Ollama local LLM prompt building & API call
+│   ├── memory.py               # Implements conversational history queue
+│   └── utils.py                # NLP utility handlers & rule-based keyword lists
+├── docs/                       # Project documentation & diagram files
+│   ├── project_workflow.md
+│   ├── project_workflow.txt
+│   ├── workflow_diagram.png
+│   └── project_working_and_structure.txt  # [THIS FILE]
+├── research/                   # Jupyter notebooks and experimental training scripts
+│   ├── model.ipynb
+│   ├── sarcasm_training.ipynb  # Notebook used to train the custom sarcasm model
+│   ├── build_rookie_nb.py
+│   ├── build_sarcasm_nb.py
+│   └── train_model_automated.py
+├── scripts/                    # Helper scripts for validation
+│   └── verify_integration.py   # Runs a sample test to check pipeline linkages
+└── dataset/                    # Reference folder for training datasets
+    └── Do drop a mail if you want the dataset.txt
+
+
+3. CORE IMPLEMENTATION DETAILS
+------------------------------
+
+* Streamlit Dashboard (app.py): Renders the chat messages, takes user input,
+  and manages session state.
+* Zero-Shot Classification: Uses "facebook/bart-large-mnli" to assign intent categories
+  without requiring a specialized dataset. This lets you modify classification categories 
+  easily by altering the labels list in code.
+* Robust Loading: The models are loaded inside a custom wrapper "get_safe_pipeline" 
+  in "src/models.py". If the system is offline, it bypasses API handshakes and loads cached
+  model files directly.
+* Custom Sarcasm Model integration: If a fine-tuned sarcasm model is saved to the 
+  "/sarcasm_model/" path at the root level, the program automatically loads it. Otherwise,
+  it falls back to the default Twitter irony model.
